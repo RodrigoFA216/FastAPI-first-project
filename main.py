@@ -144,3 +144,85 @@ def neurona(theta:float=Body(), w1:float=Body(), w2:float=Body(), x1:float=Body(
         return [{"success": y},{"success": res},]
     else:
         return [{"message": "Error"}]
+
+
+
+
+
+
+
+
+
+
+
+
+#------------------------------------------------------------------------------
+#---------------------------------Detect Density-------------------------------
+#------------------------------------------------------------------------------
+import numpy as np
+from sklearn.neighbors import LocalOutlierFactor
+import matplotlib.pyplot as plt
+
+@app.post('/neighbors/', tags=['Detect Density'])
+def detectFunction(min:float=Body(),max:float=Body()):
+    # Generar datos sintéticos
+    np.random.seed(42) #numpy configura la generación de datos random con una semilla 42
+    X = 0.3 * np.random.randn(100, 2) # genera datos de 100 filas por dos columnas
+    #genera datos que funcionarán de outliers entre -4 y 4 de 20 filas y dos columnas
+    X_outliers = np.random.uniform(low=(min*-1), high=(max*2), size=(20, 2)) 
+    #concatenamos en x las matrices que ya habíamos hecho, 
+    # en primer lugar concatenamos x desplazado en 2 y x desplazado en -2 (en y) y concatenamos los outliers 
+    # esto va a generar una dispersión atípica de los valores outliers
+    # no importa el orden en que sean concatenados mientras estén en un solo objeto
+    x = np.r_[X + (max), X - (min), X_outliers]
+
+    # Ajustar el modelo de detección de outliers
+    # crea un objeto del modelo de detección basado en densidad llamado LocalOutlierFactor
+    # un punto es considerado un outlier si su densidad de vecinos es muy baja en comparación 
+    # con la densidad de los vecinos de los demás puntos
+    # La variable n_neighbors se utiliza para especificar el número de vecinos más cercanos que 
+    # se utilizarán para calcular la densidad
+    clf = LocalOutlierFactor(n_neighbors=20)
+    y_pred = clf.fit_predict(x)
+    # y_scores = clf.decision_function(X)
+    # print("y_scores", y_scores)
+    #opción 1
+    y_predict_dict = {i: x.tolist() for i, x in enumerate(y_pred) if x.tolist()==-1}
+    y_pred_list = y_pred.tolist()
+    outlierdict = {}
+    x_first=x[:,0]
+    x_second=x[:,1]
+    for key, value in y_predict_dict.items():
+        local=int(key)
+        matrixX=x_first[local]
+        matrixY=x_second[local]
+        outlierdict.update({str(matrixX): matrixY})
+    print("outlierdict", outlierdict)
+    print("y_pred", y_pred)
+    # outliers = []
+    # print(y_pred)
+    # for i, x in enumerate(y_pred):
+    #     if x.tolist() == -1:
+    #         my_dict[i] = x.tolist()
+    #         outliers.append(x)
+    #opción 2
+    # my_dict = {}
+    # for i, x in np.ndenumerate(y_pred):
+    #     if x == -1:
+    #         my_dict[i[0]] = x.tolist()
+    # print("my_dict", my_dict)
+    return [{
+        "message": "success",
+        "processed": True
+    },
+    {
+        "Training realdata": [X],
+        "Training Outliers": [X_outliers]
+    },
+    {
+        "Data Trained": [x]
+    },
+    {
+        "Outliers detected": outlierdict
+    }
+    ]
