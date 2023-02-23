@@ -91,27 +91,6 @@ def paramsQuery(query:str):return query
 def searchQuery(Tech:str, Age:int):
     return [dev for dev in developers if dev['tech']==Tech and dev['age']==Age]
 
-class Neurona:
-    def __init__(self, w1, w2, theta):
-        self.w1 = w1
-        self.w2 = w2
-        self.theta = theta
-
-    def activacion(self, x1, x2):
-        z = (self.w1 * x1) + (self.w2 * x2) - self.theta
-        y = 1 / (1 + math.exp(-z))
-        return y
-
-@app.post('/ML/neurona/', tags=['Neurona'])
-def neurona(theta:float=Body(), w1:float=Body(), w2:float=Body(), x1:float=Body(), x2:float=Body()):
-    z=(w1*x1)+(w2*x2) -theta
-    y=1 / (1 + math.exp(-z))
-    n=Neurona(w1,w2,theta)
-    res=n.activacion(x1,x2)
-    if y:
-        return [{"success": y},{"success": res},]
-    else:
-        return [{"message": "Error"}]
 
 
 #------------------------------------------------------------------------------
@@ -143,3 +122,25 @@ def devs(id:int=Body(), name:str=Body(), lname:str=Body(), age:int=Body(), tech:
             "age": age,
             "tech": tech
         },]
+
+class Neurona:
+    def __init__(self, w1, w2, theta):
+        self.w1 = w1
+        self.w2 = w2
+        self.theta = theta
+
+    def activacion(self, x1, x2):
+        z = (self.w1 * x1) + (self.w2 * x2) - self.theta
+        y = 1 / (1 + math.exp(-z))
+        return y
+
+@app.post('/ML/neurona/', tags=['Neurona'])
+def neurona(theta:float=Body(), w1:float=Body(), w2:float=Body(), x1:float=Body(), x2:float=Body()):
+    z=(w1*x1)+(w2*x2) -theta
+    y=1 / (1 + math.exp(-z))
+    n=Neurona(w1,w2,theta)
+    res=n.activacion(x1,x2)
+    if y:
+        return [{"success": y},{"success": res},]
+    else:
+        return [{"message": "Error"}]
