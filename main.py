@@ -170,7 +170,7 @@ def detectFunction(min:float=Body(),max:float=Body()):
     X = 0.3 * np.random.randn(100, 2) # genera datos de 100 filas por dos columnas
     #genera datos que funcionarán de outliers entre -4 y 4 de 20 filas y dos columnas
     X_outliers = np.random.uniform(low=(min*-1), high=(max*2), size=(20, 2)) 
-    #concatenamos en x las matrices que ya habíamos hecho, 
+    # concatenamos en x las matrices que ya habíamos hecho, 
     # en primer lugar concatenamos x desplazado en 2 y x desplazado en -2 (en y) y concatenamos los outliers 
     # esto va a generar una dispersión atípica de los valores outliers
     # no importa el orden en que sean concatenados mientras estén en un solo objeto
@@ -184,8 +184,6 @@ def detectFunction(min:float=Body(),max:float=Body()):
     # se utilizarán para calcular la densidad
     clf = LocalOutlierFactor(n_neighbors=20)
     y_pred = clf.fit_predict(x)
-    # y_scores = clf.decision_function(X)
-    # print("y_scores", y_scores)
     #opción 1
     y_predict_dict = {i: x.tolist() for i, x in enumerate(y_pred) if x.tolist()==-1}
     y_pred_list = y_pred.tolist()
@@ -199,30 +197,19 @@ def detectFunction(min:float=Body(),max:float=Body()):
         outlierdict.update({str(matrixX): matrixY})
     print("outlierdict", outlierdict)
     print("y_pred", y_pred)
-    # outliers = []
-    # print(y_pred)
-    # for i, x in enumerate(y_pred):
-    #     if x.tolist() == -1:
-    #         my_dict[i] = x.tolist()
-    #         outliers.append(x)
-    #opción 2
-    # my_dict = {}
-    # for i, x in np.ndenumerate(y_pred):
-    #     if x == -1:
-    #         my_dict[i[0]] = x.tolist()
-    # print("my_dict", my_dict)
-    return [{
-        "message": "success",
-        "processed": True
-    },
-    {
-        "Training realdata": [X],
-        "Training Outliers": [X_outliers]
-    },
-    {
-        "Data Trained": [x]
-    },
-    {
-        "Outliers detected": outlierdict
-    }
+    return [
+        {
+            "message": "success",
+            "processed": True
+        },
+        {
+            "Training realdata": [X],
+            "Training Outliers": [X_outliers]
+        },
+        {
+            "Data Trained": [x]
+        },
+        {
+            "Outliers detected": outlierdict
+        }
     ]
