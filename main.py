@@ -1,12 +1,28 @@
 #se importa fastapi desde la librería de fastapi
 from fastapi import FastAPI, Body, Request, Response
+# Esquemas
+from pydantic import BaseModel, Field
+from typing import Optional
+# Para la neurona
 import math
+
+# Análisis numérico
+import numpy as np
+from sklearn.neighbors import LocalOutlierFactor
+import matplotlib.pyplot as plt
 
 #se inicializa el servidor de fastapi en la variable app
 app = FastAPI()
 #modificación de la documentación
 app.title="FastAPI para Machine learning"
 app.version="0.0.1"
+
+class Developer(BaseModel):
+    id:int | None = None
+    name:str | None = Field(max_length=10)
+    lname:str | None = None
+    age:int | None = 18
+    tech: Optional[str] =None
 
 developers=[
     {
@@ -123,6 +139,37 @@ def devs(id:int=Body(), name:str=Body(), lname:str=Body(), age:int=Body(), tech:
             "tech": tech
         },]
 
+#------------------------------------------------------------------------------
+#---------------------------------MÉTODO PUT-----------------------------------
+#------------------------------------------------------------------------------
+
+@app.put('/developers/{id}', tags=['put method'])
+def update_dev(id:int, name:str=Body(), lname:str=Body(), age:int=Body(), tech:str=Body()):
+    print('hola')
+    for developer in developers:
+        if developer['id']==id:
+            developer['name']=name
+            developer['lname']=lname
+            developer['age']=age
+            tech = ' '+tech
+            developer['tech']+=tech
+            return developers
+
+#------------------------------------------------------------------------------
+#---------------------------------MÉTODO DEL-----------------------------------
+#------------------------------------------------------------------------------
+
+@app.delete('/developers/{id}', tags=['delete method'])
+def delete_dev(id:int):
+    for developer in developers:
+        if developer['id']==id:
+            developers.remove(developer)
+            return developers
+    
+
+
+
+
 class Neurona:
     def __init__(self, w1, w2, theta):
         self.w1 = w1
@@ -159,9 +206,6 @@ def neurona(theta:float=Body(), w1:float=Body(), w2:float=Body(), x1:float=Body(
 #------------------------------------------------------------------------------
 #---------------------------------Detect Density-------------------------------
 #------------------------------------------------------------------------------
-import numpy as np
-from sklearn.neighbors import LocalOutlierFactor
-import matplotlib.pyplot as plt
 
 @app.post('/neighbors/', tags=['Detect Density'])
 def detectFunction(min:float=Body(),max:float=Body()):
