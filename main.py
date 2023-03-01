@@ -72,13 +72,11 @@ developers=[
 def message():
     return developers
 
-
-
 @app.get('/test', tags=['test operation'])
 def devs():
     return [{"mesage": "Working clean"}]
 
-
+#------------------------Parametros------------------------
 # Parámetros (sirve para recibir datos por URL) "/endpoint/{param}"
 # Se especifica un parámetro que se va a recibir mediante la URL
 # FastAPI detecta el parametro que se obtiene en el endpoint
@@ -106,8 +104,6 @@ def paramsQuery(query:str):return query
 @app.get('/params/query/', tags=['test query'])
 def searchQuery(Tech:str, Age:int):
     return [dev for dev in developers if dev['tech']==Tech and dev['age']==Age]
-
-
 
 #------------------------------------------------------------------------------
 #---------------------------------MÉTODO POST----------------------------------
@@ -165,10 +161,10 @@ def delete_dev(id:int):
         if developer['id']==id:
             developers.remove(developer)
             return developers
-    
 
-
-
+#------------------------------------------------------------------------------
+#---------------------------------Activación de una Neurona--------------------
+#------------------------------------------------------------------------------
 
 class Neurona:
     def __init__(self, w1, w2, theta):
@@ -191,17 +187,6 @@ def neurona(theta:float=Body(), w1:float=Body(), w2:float=Body(), x1:float=Body(
         return [{"success": y},{"success": res},]
     else:
         return [{"message": "Error"}]
-
-
-
-
-
-
-
-
-
-
-
 
 #------------------------------------------------------------------------------
 #---------------------------------Detect Density-------------------------------
